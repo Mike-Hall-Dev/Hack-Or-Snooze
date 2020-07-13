@@ -19,9 +19,6 @@ class StoryList {
    *  - returns the StoryList instance.*
    */
 
-  // TODO: Note the presence of `static` keyword: this indicates that getStories
-  // is **not** an instance method. Rather, it is a method that is called on the
-  // class directly. Why doesn't it make sense for getStories to be an instance method?
 
   static async getStories() {
     // query the /stories endpoint (no auth required)
@@ -44,9 +41,49 @@ class StoryList {
    */
 
   async addStory(user, newStory) {
-    // TODO - Implement this functions!
-    // this function should return the newly created story so it can be used in
-    // the script.js file where it will be appended to the DOM
+    // Make post request to API 
+    const response = await axios.post(`${BASE_URL}/stories`, { token: user.loginToken, story: newStory })
+
+    // Make an instace of the Story class
+    newStory = new Story(response.data.story)
+
+    // add the story to the beginning of the user's list (prevents the need for a page refresh)
+    user.ownStories.unshift(newStory);
+
+    // Return the new story
+    return newStory
+  }
+
+  /**
+   * Method to make a DELETE request to /stories/storyid and remove that story from storylist array
+   */
+
+  async deleteStory(user, storyId) {
+    // Make delete request to API
+    const response = await axios.delete(`${BASE_URL}/stories/${storyId}`, { data: { token: user.loginToken } })
+
+    // Update the stories array
+    // for (story in this.stories) {
+    //   if (story.storyId === storyId) {
+    //     index = this.stories.indexOf(storyId)
+    //     this.stories.splice(index, 1)
+    //   }
+    // }
+
+    // // Update the users stories as well
+    // for (story in user.ownStories) {
+    //   if (story.storyId === storyId) {
+    //     index = user.ownStories.indexOf(storyId)
+    //     user.ownStories.splice(index, 1)
+    //   }
+    // }
+
+    // Update the stories array
+    this.stories = this.stories.filter(story => story.storyId !== storyId);
+    // Update the users stories as well
+    user.ownStories = user.ownStories.filter(s => s.storyId !== storyId);
+
+
   }
 }
 
@@ -97,7 +134,6 @@ class User {
   }
 
   /* Login in user and return user instance.
-
    * - username: an existing user's username
    * - password: an existing user's password
    */
@@ -150,6 +186,42 @@ class User {
     existingUser.favorites = response.data.user.favorites.map(s => new Story(s));
     existingUser.ownStories = response.data.user.stories.map(s => new Story(s));
     return existingUser;
+
+  }
+
+  async getUserDetails() {
+    const response = await axios.get(`${BASE_URL}/users/${this.username}`, { params: { token: this.loginToken } });
+
+    // update all of the user's properties from the API response
+    this.name = response.data.user.name;
+    this.createdAt = response.data.user.createdAt;
+    this.updatedAt = response.data.user.updatedAt;
+
+    // convert the user's favorites and ownStories into instances of Story
+    this.favorites = response.data.user.favorites.map(s => new Story(s));
+    this.ownStories = response.data.user.stories.map(s => new Story(s));
+
+    return this;
+  }
+
+  async addFavorite(storyId) {
+    // post story to username/favorites
+    await axios.post(`${BASE_URL}/users/${this.username}/favorites/${storyId}`, { token: this.loginToken })
+    // get updated info from API
+    await this.getUserDetails()
+
+    return this
+
+  }
+
+  async unFavorite(storyId) {
+    // delete call to remove favorite
+    await axios.delete(`${BASE_URL}/users/${this.username}/favorites/${storyId}`, { data: { token: this.loginToken } })
+    // get updated user info from API
+    await this.getUserDetails()
+
+    return this
+
   }
 }
 

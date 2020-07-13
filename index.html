@@ -14,16 +14,24 @@
 <body>
   <nav>
     <b><a class="nav-link navbar-brand" href="#" id="nav-all">Hack or Snooze</a></b>
+    <section class="main-nav-links hidden">
+      <span>|</span>
+      <a class="nav-link" href="#" id="nav-submit">submit</a>
+      <span>|</span>
+      <a class="nav-link" href="#" id="nav-favorites">favorites</a>
+      <span>|</span>
+      <a class="nav-link" href="#" id="nav-my-stories">my stories</a>
+    </section>
     <a class="nav-link nav-right" href="#" id="nav-login">login/create user</a>
     <span class="nav-link nav-right hidden" id="nav-welcome">
       <a href="#" id="nav-user-profile"></a>
     </span>
-    <a class="hidden" id="nav-logout" href="#">
+    <a class="hidden nav-right" id="nav-logout" href="#">
       <small>(logout)</small>
     </a>
   </nav>
   <section class="articles-container container">
-    <form action="" class="hidden" id="submit-form">
+    <form action="" class="hidden" id="submit-story-form">
       <div>
         <label for="author">author</label>
         <input id="author" required type="text" placeholder="author name">
@@ -98,13 +106,13 @@
       <button type="submit">create account</button>
     </form>
   </section>
-  <section id="user-profile" class="container hidden">
+  <!-- <section id="user-profile" class="container hidden">
     <h4>User Profile Info</h4>
     <section>
       <div id="profile-name">Name:</div>
       <div id="profile-username">Username:</div>
       <div id="profile-account-date">Account Created:</div>
-    </section>
+    </section> -->
   </section>
 </body>
 <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
